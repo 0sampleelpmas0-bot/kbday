@@ -364,11 +364,20 @@
     font-style:italic;
     font-weight:500;
     color:var(--brown);
-    margin-bottom:26px;
+    margin-bottom:10px;
     max-width:420px;
     z-index:1;
     line-height:1.5;
     animation:gate-in 0.9s cubic-bezier(.22,1,.36,1) 0.3s both;
+  }
+  #gate .prompt-note{
+    font-size:12px;
+    letter-spacing:1px;
+    color:var(--brown-soft);
+    opacity:0.75;
+    margin-bottom:26px;
+    z-index:1;
+    animation:gate-in 0.9s cubic-bezier(.22,1,.36,1) 0.35s both;
   }
 
   #gate .input-row{
@@ -1631,6 +1640,7 @@
 
     <div class="kicker">this one's private</div>
     <p class="prompt">Who loves you the most?</p>
+    <p class="prompt-note">nicknames count too</p>
 
     <div class="input-row-wrap">
       <div class="input-row">
@@ -2265,7 +2275,7 @@
   // ============================================================
   // CONFIG — edit these values
   // ============================================================
-  const PASSCODE_ANSWER = "daddy";        
+  const PASSCODE_ANSWER = "dev";        
   const PREVIEW_CODE = "preview8";        
   const BIRTHDAY_MONTH = 8;               // August
   const BIRTHDAY_DAY = 8;                 // 8th
