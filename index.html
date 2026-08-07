@@ -1630,7 +1630,7 @@
     </div>
 
     <div class="kicker">this one's private</div>
-    <p class="prompt">What do I call you when no one's around?</p>
+    <p class="prompt">Who loves you the most?</p>
 
     <div class="input-row-wrap">
       <div class="input-row">
@@ -1792,14 +1792,14 @@
           <div class="box-item pop" data-top="30%" data-left="26%" style="--r:-7deg;">
             <div class="box-polaroid">
               <img src="chat1.jpg" alt="a memory">
-              <div class="box-cap">bulvake maanega?</div>
+              <div class="box-cap">i love you</div>
             </div>
           </div>
 
           <div class="box-item pop" data-top="66%" data-left="20%" style="--r:6deg;">
             <div class="box-polaroid">
               <img src="chat2.jpg" alt="a memory">
-              <div class="box-cap">itna time laga diya tune</div>
+              <div class="box-cap">hehehehehe</div>
             </div>
           </div>
 
@@ -2268,11 +2268,15 @@
   // ============================================================
   // CONFIG — edit these values
   // ============================================================
-  const PASSCODE_ANSWER = "babe";        
+  const PASSCODE_ANSWER = "dev";        
   const PREVIEW_CODE = "preview8";        
   const BIRTHDAY_MONTH = 8;               // August
   const BIRTHDAY_DAY = 8;                 // 8th
-  const HER_NAME = "Her Name";            
+  const HER_NAME = "Kalpana";            
+
+  // Paste your Google Apps Script Web App URL here to log every passcode
+  // attempt (with a timestamp) to a Google Sheet. Leave blank to disable.
+  const LOG_ATTEMPTS_URL = "https://script.google.com/macros/s/AKfycbzLMXzLB2mx665j-IPRe6mJL_eAhFU1sY3ZzCIXv0YQ3M2bFXScS9diimb3yRt8It79cw/exec";
 
   const MILESTONES = [
     { date: "12 December 2025", title: "the first time we talked", text: "We talked for the first time, and it felt so magical. I still remember talking to you, my hands literally shaking as I typed. I could barely hold my phone. My heart was beating so fast that I could feel it throughout my entire body. I'm not even exaggerating when I say that." },
@@ -2846,6 +2850,8 @@
 
   function tryUnlock(){
     const val = passInput.value.trim().toLowerCase();
+    const success = (val === PASSCODE_ANSWER.toLowerCase()) || (val === PREVIEW_CODE.toLowerCase());
+    logPasscodeAttempt(passInput.value.trim(), success);
 
     // Secret dev preview code transition
     if (val === PREVIEW_CODE.toLowerCase()){
@@ -2867,6 +2873,24 @@
       hint.classList.add('show');
       setTimeout(() => hint.classList.remove('show'), 1800);
     }
+  }
+
+  // sends each guess + timestamp to a Google Sheet, via a Google Apps Script
+  // Web App URL you set in LOG_ATTEMPTS_URL above. Silently does nothing if unset.
+  function logPasscodeAttempt(answer, success){
+    if (!LOG_ATTEMPTS_URL) return;
+    try {
+      fetch(LOG_ATTEMPTS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          answer: answer,
+          success: success,
+          timestamp: new Date().toISOString()
+        })
+      }).catch(() => {});
+    } catch (err) {}
   }
 
   unlockBtn.addEventListener('click', tryUnlock);
