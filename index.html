@@ -2275,10 +2275,11 @@
   // ============================================================
   // CONFIG — edit these values
   // ============================================================
-  const PASSCODE_ANSWER = "daddy";        
+  const PASSCODE_ANSWER = "dev";        
   const PREVIEW_CODE = "preview8";        
   const BIRTHDAY_MONTH = 8;               // August
   const BIRTHDAY_DAY = 8;                 // 8th
+  const BIRTHDAY_YEAR = 2026;             // this is a one-time celebration, not a yearly recurring one
   const HER_NAME = "Kalpana";            
 
   // Paste your Google Apps Script Web App URL here to log every passcode
@@ -2800,23 +2801,22 @@
 
   let countdownTimer = null;
 
-  function isBirthdayToday(){
-    const now = new Date();
-    return now.getMonth() + 1 === BIRTHDAY_MONTH && now.getDate() === BIRTHDAY_DAY;
+  // the exact moment the birthday arrives — a single fixed date, not a recurring yearly one
+  function getBirthdayDate(){
+    return new Date(BIRTHDAY_YEAR, BIRTHDAY_MONTH - 1, BIRTHDAY_DAY, 0, 0, 0);
+  }
+
+  // true from the moment the birthday starts, and stays true forever after — no countdown ever restarts
+  function hasBirthdayArrived(){
+    return new Date() >= getBirthdayDate();
   }
 
   function msUntilBirthday(){
-    const now = new Date();
-    const year = now.getFullYear();
-    let target = new Date(year, BIRTHDAY_MONTH - 1, BIRTHDAY_DAY, 0, 0, 0);
-    if (target <= now) {
-      target = new Date(year + 1, BIRTHDAY_MONTH - 1, BIRTHDAY_DAY, 0, 0, 0);
-    }
-    return target - now;
+    return getBirthdayDate() - new Date();
   }
 
   function updateCountdown(){
-    const diff = msUntilBirthday();
+    const diff = Math.max(0, msUntilBirthday());
     const totalMinutes = Math.floor(diff / (1000 * 60));
     const days = Math.floor(totalMinutes / (60 * 24));
     const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
@@ -2826,8 +2826,8 @@
     document.getElementById('cdHours').textContent = String(hours).padStart(2, '0');
     document.getElementById('cdMinutes').textContent = String(minutes).padStart(2, '0');
 
-    // Trigger full birthday screen transition instantly if the clock hits midnight while viewing countdown
-    if (isBirthdayToday()){
+    // Trigger full birthday screen transition instantly if the clock crosses into the birthday while viewing countdown
+    if (hasBirthdayArrived()){
       clearInterval(countdownTimer);
       triggerTransitionCascade(() => {
         showScreen(fullsiteScreen);
@@ -2844,9 +2844,9 @@
     seal.classList.add('unlocking');
     setTimeout(() => {
       // Trigger flower cascade when unlocking
-      const targetScreen = isBirthdayToday() ? fullsiteScreen : countdownScreen;
+      const targetScreen = hasBirthdayArrived() ? fullsiteScreen : countdownScreen;
       triggerTransitionCascade(() => {
-        if (!isBirthdayToday()){
+        if (!hasBirthdayArrived()){
           updateCountdown();
           countdownTimer = setInterval(updateCountdown, 1000);
         }
